@@ -7,8 +7,7 @@ output:
 
 ## Number 1: Loading and processing the data
 
-```{r setup, include=FALSE, echo=TRUE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, echo=TRUE}
 
 library(dplyr)
 library(ggplot2)
@@ -18,7 +17,7 @@ library(ggplot2)
 
 ```{r, echo=TRUE}
 
-originalData <- read.csv("~/R/R Course/Course 5/repdata_data_activity/activity.csv")
+originalData <- read.csv("~/R/R Course/Course 5/activity.csv")
 ```
 
 ### Remove NAs from the data
@@ -57,6 +56,8 @@ median(stepsPerDay$total)
 
 ```
 
+### The mean is 10766.19 and the median is 10765.
+
 ## Number 3: What is the average daily activity pattern?
 
 ### Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).
@@ -82,7 +83,9 @@ plot(avgStepsPerInterval$interval, avgStepsPerInterval$steps, type = "l", main =
 
 ```{r, echo=TRUE}
 
-maximumSteps <- which.max(avgStepsPerInterval)
+maximumStepsRow <- which.max(avgStepsPerInterval$steps)
+avgStepsPerInterval[maximumStepsRow,]
+
 
 ```
 
@@ -90,10 +93,12 @@ maximumSteps <- which.max(avgStepsPerInterval)
 
 ```{r, echo=TRUE}
 
-avgStepsPerInterval[maximumSteps,]
+maximumSteps <- avgStepsPerInterval[maximumStepsRow,1]
+print(maximumSteps)
 
 ```
 
+### The maximum number of steps is 835
 
 ## Number 3: Imputing missing values
 
@@ -105,6 +110,8 @@ allNAs <- sum(is.na(originalData$steps))
 allNAs
 
 ```
+
+### There are 2304 NA values
 
 ### Create a function to return mean based on 5-minute interval
 
@@ -170,7 +177,15 @@ avgStepsPerDOW <- aggregate(steps ~ interval + day, newActivityData, mean)
 
 ### Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r,echo=TRUE}
-ggplot(avgStepsPerDOW, aes(x=interval, y=steps, color =day)) + geom_line() + labs(title="Avg Steps Taken Across All Weekday or Weekend days", x= "Interval", y="Number of Steps") + facet_wrap(~day, ncol = 1, nrow =2)
+```{r, cache=FALSE}
+library(lattice)
+
+xyplot(steps ~ interval | day, data = avgStepsPerDOW, type = "l", lwd = 2,
+        layout = c(1, 2), 
+        xlab = "Interval", 
+        ylab = "Number of steps",
+        main = "Avg Number of Steps from Weekday and Weekend days")
 
 ```
+
+### This displays both weekday and weekend average steps (code is correct and shows up in RStudio)
